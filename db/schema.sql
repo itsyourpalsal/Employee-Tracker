@@ -1,36 +1,32 @@
--- initial schema to drop and create
-DROP TABLE IF EXISTS employees;
-DROP TABLE IF EXISTS roles;
-DROP TABLE IF EXISTS departments;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
+USE employee_db; 
 
--- creates the department table with the following columns: id and department name
-CREATE TABLE departments (
-    -- primary key makes it unique
-id INTEGER AUTO_INCREMENT PRIMARY KEY,
--- only 30 characters allowed
-dep_name VARCHAR(60)
+CREATE TABLE department (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL
 );
 
---  creates the roles table with the following columns: id, title, salary, and department id
-CREATE TABLE roles (
-id INTEGER AUTO_INCREMENT PRIMARY KEY,
-title VARCHAR(60),
---  decimal values are allowe to be 10 digits long with 2 decimal places ex: 1234.56
-salary DECIMAL(10,2),
-department_id INTEGER,
-CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE
+CREATE TABLE role (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(30) NOT NULL, 
+    salary DECIMAL NOT NULL,
+    department_id INTEGER, 
+    INDEX dep_ind (department_id),
+    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
--- creates the employee table with the following columns: id, first name, last name, role id, and manager id
-CREATE TABLE employees (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(60),
-    last_name VARCHAR(60),
-    -- can be null if no manager
-    manager_id INTEGER,  
-    -- foreign key constraint to the roles table
-    CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL,
-    role_id INTEGER,
-    is_manager BOOLEAN NOT NULL, -- if manager is true, then the employee is a manager
-    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+CREATE TABLE employee (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INTEGER, 
+    INDEX role_ind (role_id),
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
+    manager_id INTEGER,
+    INDEX manager_ind (manager_id),
+    CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
+
+
+
